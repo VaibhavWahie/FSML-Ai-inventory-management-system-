@@ -1,0 +1,13 @@
+stages:
+  train:
+    cmd: python pipeline/pipeline.py
+    deps:
+      - data/train.csv
+      - src/train.py
+      - src/preprocess.py
+      - src/features.py
+    params:
+      - model.n_estimators
+      - model.max_depth
+    outs:
+      - models/model_v1.pkl
