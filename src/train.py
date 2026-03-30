@@ -1,10 +1,14 @@
 import pickle
 import logging
 import yaml
+import os
 
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error
+
+import mlflow
+import mlflow.sklearn
 
 logging.basicConfig(
     filename="logs/app.log",
@@ -12,77 +16,95 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-
 def load_params():
     with open("params.yaml", "r") as f:
-        params = yaml.safe_load(f)
-    return params
-
+        return yaml.safe_load(f)
 
 def train_model(df):
     try:
-        logging.info("Training started...")
+        mlflow.set_experiment("inventory-model")
 
-        # Load params
-        params = load_params()
+        with mlflow.start_run():
 
-        rf_params_list = params["random_forest"]
-        xgb_params_list = params["xgboost"]
+            params = load_params()
 
-        # Prepare data
-        X = df.drop(columns=["sales", "date"])
-        y = df["sales"]
+            rf_params_list = params["random_forest"]
+            xgb_params_list = params["xgboost"]
 
-        split = int(len(df) * 0.8)
-        X_train, X_test = X[:split], X[split:]
-        y_train, y_test = y[:split], y[split:]
+            # Prepare data
+            X = df.drop(columns=["sales", "date"])
+            y = df["sales"]
 
-        best_model = None
-        best_rmse = float("inf")
-        best_model_name = ""
+            split = int(len(df) * 0.8)
+            X_train, X_test = X[:split], X[split:]
+            y_train, y_test = y[:split], y[split:]
 
-        # 🔥 RANDOM FOREST LOOP
-        for i, rf_params in enumerate(rf_params_list):
-            logging.info(f"Training RandomForest config {i}: {rf_params}")
+            best_model = None
+            best_rmse = float("inf")
+            best_model_name = ""
 
-            model = RandomForestRegressor(**rf_params)
-            model.fit(X_train, y_train)
+            # 🔥 RANDOM FOREST (CPU)
+            for i, rf_params in enumerate(rf_params_list):
+                print(f"Training RF {i}: {rf_params}")
 
-            preds = model.predict(X_test)
-            rmse = mean_squared_error(y_test, preds, squared=False)
+                model = RandomForestRegressor(**rf_params)
+                model.fit(X_train, y_train)
 
-            logging.info(f"RF Config {i} RMSE: {rmse}")
+                preds = model.predict(X_test)
 
-            if rmse < best_rmse:
-                best_rmse = rmse
-                best_model = model
-                best_model_name = f"RandomForest_{i}"
+                mse = mean_squared_error(y_test, preds)
+                rmse = mse ** 0.5
 
-        # 🔥 XGBOOST LOOP
-        for i, xgb_params in enumerate(xgb_params_list):
-            logging.info(f"Training XGBoost config {i}: {xgb_params}")
+                print(f"RF {i} RMSE: {rmse}")
 
-            model = XGBRegressor(**xgb_params)
-            model.fit(X_train, y_train)
+                mlflow.log_param(f"rf_params_{i}", rf_params)
+                mlflow.log_metric(f"rf_rmse_{i}", rmse)
 
-            preds = model.predict(X_test)
-            rmse = mean_squared_error(y_test, preds, squared=False)
+                if rmse < best_rmse:
+                    best_rmse = rmse
+                    best_model = model
+                    best_model_name = f"RF_{i}"
 
-            logging.info(f"XGB Config {i} RMSE: {rmse}")
+            # 🔥 XGBOOST (GPU ENABLED)
+            for i, xgb_params in enumerate(xgb_params_list):
+                print(f"Training XGB {i}: {xgb_params}")
 
-            if rmse < best_rmse:
-                best_rmse = rmse
-                best_model = model
-                best_model_name = f"XGBoost_{i}"
+                model = XGBRegressor(
+                    **xgb_params,
+                    tree_method="gpu_hist",
+                    predictor="gpu_predictor"
+                )
 
-        # Save best model
-        with open("models/model_v1.pkl", "wb") as f:
-            pickle.dump(best_model, f)
+                model.fit(X_train, y_train)
 
-        logging.info(f"Best model: {best_model_name} with RMSE: {best_rmse}")
-        logging.info("Model saved successfully")
+                preds = model.predict(X_test)
 
-        return best_model
+                mse = mean_squared_error(y_test, preds)
+                rmse = mse ** 0.5
+
+                print(f"XGB {i} RMSE: {rmse}")
+
+                mlflow.log_param(f"xgb_params_{i}", xgb_params)
+                mlflow.log_metric(f"xgb_rmse_{i}", rmse)
+
+                if rmse < best_rmse:
+                    best_rmse = rmse
+                    best_model = model
+                    best_model_name = f"XGB_{i}"
+
+            # Save model
+            os.makedirs("models", exist_ok=True)
+
+            with open("models/model_v1.pkl", "wb") as f:
+                pickle.dump(best_model, f)
+
+            mlflow.sklearn.log_model(best_model, "model")
+
+            print("\n✅ TRAINING COMPLETE")
+            print(f"✅ Best Model: {best_model_name}")
+            print(f"✅ Best RMSE: {best_rmse}")
+
+            return best_model
 
     except Exception as e:
         logging.error(f"Training error: {e}")

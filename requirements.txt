@@ -1,0 +1,11 @@
+pandas
+numpy
+scikit-learn
+xgboost
+pyyaml
+fastapi
+uvicorn
+pydantic
+mlflow
+dvc
+python-dotenv
