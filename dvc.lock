@@ -1,0 +1,40 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python -m pipeline.pipeline
+    deps:
+    - path: data/train.csv
+      hash: md5
+      md5: b84434bf8eede5345ec04e41dfe9d86e
+      size: 121800373
+    - path: src/features.py
+      hash: md5
+      md5: a4d282fb3e7213474870fe449c527f5c
+      size: 751
+    - path: src/preprocess.py
+      hash: md5
+      md5: e10a4570ebd5f1ce9b3725f6b3101f3a
+      size: 562
+    - path: src/train.py
+      hash: md5
+      md5: 7d60384a4c25439e9921fe46e7b3ec9e
+      size: 3244
+    params:
+      params.yaml:
+        random_forest:
+        - n_estimators: 25
+          max_depth: 2
+        - n_estimators: 30
+          max_depth: 5
+        xgboost:
+        - n_estimators: 200
+          max_depth: 5
+          learning_rate: 0.1
+        - n_estimators: 300
+          max_depth: 8
+          learning_rate: 0.05
+    outs:
+    - path: models/model_v1.pkl
+      hash: md5
+      md5: 784729e4095b010f9c3623669a0ba915
+      size: 3463634
