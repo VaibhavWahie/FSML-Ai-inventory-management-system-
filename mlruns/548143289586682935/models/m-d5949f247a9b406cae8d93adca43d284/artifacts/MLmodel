@@ -1,4 +1,4 @@
-artifact_path: file:///C:/Users/Asus/OneDrive/Desktop/FSMLFINAL/FSML-Ai-inventory-management-system-/mlruns/1/models/m-3e58a28a4ddb4c97a6f2928771423036/artifacts
+artifact_path: file:///C:/Users/Asus/OneDrive/Desktop/FSMLFINAL/FSML-Ai-inventory-management-system-/mlruns/548143289586682935/models/m-d5949f247a9b406cae8d93adca43d284/artifacts
 flavors:
   python_function:
     env:
@@ -15,9 +15,9 @@ flavors:
     sklearn_version: 1.8.0
     skops_trusted_types: null
 mlflow_version: 3.10.1
-model_id: m-3e58a28a4ddb4c97a6f2928771423036
-model_size_bytes: 13283431
-model_uuid: m-3e58a28a4ddb4c97a6f2928771423036
+model_id: m-d5949f247a9b406cae8d93adca43d284
+model_size_bytes: 4484365
+model_uuid: m-d5949f247a9b406cae8d93adca43d284
 prompts: null
-run_id: 662b0753e07843749bf6caa71142e424
-utc_time_created: '2026-03-30 13:51:03.650151'
+run_id: 913926b684d24d39b19b2c43634691ad
+utc_time_created: '2026-03-31 05:26:19.997409'

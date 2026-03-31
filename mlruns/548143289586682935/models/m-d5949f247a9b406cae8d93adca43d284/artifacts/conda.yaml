@@ -12,4 +12,5 @@ dependencies:
   - pyarrow==23.0.1
   - scikit-learn==1.8.0
   - scipy==1.17.1
+  - xgboost==1.7.6
 name: mlflow-env

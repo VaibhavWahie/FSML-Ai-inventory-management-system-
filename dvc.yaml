@@ -1,13 +1,13 @@
 stages:
   train:
-    cmd: python pipeline/pipeline.py
+    cmd: python -m pipeline.pipeline
     deps:
       - data/train.csv
       - src/train.py
-      - src/preprocess.py
       - src/features.py
+      - src/preprocess.py
     params:
-      - model.n_estimators
-      - model.max_depth
+      - random_forest
+      - xgboost
     outs:
       - models/model_v1.pkl
