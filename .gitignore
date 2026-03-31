@@ -13,3 +13,14 @@ logs/*.log
 
 # Ignore system files
 .DS_Store
+# MLflow
+mlruns/
+
+# Models (optional - if large)
+models/
+
+# DVC cache (important)
+.dvc/cache/
+
+# Environment
+.env
