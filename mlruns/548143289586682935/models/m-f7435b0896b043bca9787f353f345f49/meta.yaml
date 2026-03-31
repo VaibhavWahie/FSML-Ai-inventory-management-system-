@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/Asus/OneDrive/Desktop/FSMLFINAL/FSML-Ai-inventory-management-system-/mlruns/548143289586682935/models/m-f7435b0896b043bca9787f353f345f49/artifacts
+creation_timestamp: 1774948763124
+experiment_id: '548143289586682935'
+last_updated_timestamp: 1774948767705
+model_id: m-f7435b0896b043bca9787f353f345f49
+model_type: null
+name: model
+source_run_id: a6dda64f73c94ef8b1c45e029de04d45
+status: 2
+status_message: null
