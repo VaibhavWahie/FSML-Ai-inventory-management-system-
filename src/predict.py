@@ -1,18 +1,13 @@
 import pickle
-from src.preprocess import preprocess_data
-from src.features import create_features
+import pandas as pd
 
-def predict(input_df):
-    # Load model
-    with open("models/model_v1.pkl", "rb") as f:
-        model = pickle.load(f)
+with open("models/model_v1.pkl", "rb") as f:
+    model = pickle.load(f)
 
-    # Apply same pipeline
-    df = preprocess_data(input_df)
-    df = create_features(df)
+def predict(data: dict):
+    df = pd.DataFrame([data])
 
-    X = df.drop(columns=["sales", "date"], errors="ignore")
+    # match training feature order
+    df = df[model.feature_names_in_]
 
-    preds = model.predict(X)
-
-    return preds.tolist()
+    return model.predict(df)[0]
