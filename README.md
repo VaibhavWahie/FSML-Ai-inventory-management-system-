@@ -2,57 +2,245 @@
 
 📦 AI Smart Inventory Management System
 🚀 Overview
-This project is an AI-based inventory forecasting system that predicts future product demand using historical sales data.
+This project is an AI-powered inventory demand forecasting system that predicts future product demand using historical retail sales data.
 
-It helps:
+The system helps businesses:
 
-Reduce overstocking
+Reduce overstocking costs
 
 Avoid stockouts
 
-Improve inventory planning
+Improve inventory planning and decision-making
 
-📊 Features
-Data preprocessing & feature engineering
+It is designed as a complete end-to-end machine learning pipeline with deployment and MLOps components.
 
-Machine learning models (Random Forest, XGBoost)
+🎯 Problem Statement
+Demand forecasting is a critical challenge in retail.
 
-Demand prediction API using FastAPI
+Inaccurate predictions can lead to:
 
-Interactive dashboard using Streamlit
+Overstocking → increased storage costs
 
-Docker support
+Understocking → lost revenue
 
-Basic CI/CD pipeline
+Inefficient supply chain operations
+
+This project aims to build a machine learning-based solution to accurately predict future demand.
+
+📊 Dataset
+The dataset consists of time-series retail data, where each row represents daily sales of a product in a store.
+
+Features:
+Store ID
+
+Product Family
+
+Date
+
+Sales
+
+Promotion
+
+📌 Dataset is not included due to size
+👉 Link available in: data/dataset_link.txt
 
 ⚙️ Project Structure
-src/        → ML logic  
-pipeline/   → training pipeline  
-models/     → saved model  
-app/        → FastAPI API  
-data/       → dataset link  
-logs/       → logs  
-▶️ How to Run
-1. Train Model
-python pipeline/pipeline.py
-2. Run API
+project/
+│
+├── README.md
+├── requirements.txt
+├── Dockerfile
+│
+├── data/
+│   ├── README.md
+│   └── dataset_link.txt
+│
+├── src/
+│   ├── data_loader.py
+│   ├── preprocess.py
+│   ├── features.py
+│   ├── train.py
+│   ├── evaluate.py
+│   ├── predict.py
+│   └── utils.py
+│
+├── pipeline/
+│   └── pipeline.py
+│
+├── models/
+│   └── model_v1.pkl
+│
+├── app/
+│   ├── app.py
+│   └── schema.py
+│
+├── logs/
+│   └── app.log
+│
+└── notebooks/
+🔄 Machine Learning Pipeline
+1. Data Preprocessing (preprocess.py)
+Convert date column to datetime
+
+Sort data chronologically
+
+Handle missing values:
+
+sales → 0
+
+onpromotion → 0
+
+Encode categorical variables
+
+✅ Same preprocessing is used during training and inference
+
+2. Feature Engineering (features.py)
+Time-Based Features
+Day of week
+
+Month
+
+Week number
+
+Weekend indicator
+
+Lag Features
+lag_1, lag_2, lag_3
+
+lag_7, lag_14, lag_21, lag_28
+
+➡ Capture past sales patterns
+
+Rolling Features
+Rolling mean (7, 14 days)
+
+Rolling standard deviation
+
+➡ Capture trends and volatility
+
+Additional Feature
+lag difference (lag_1 - lag_7)
+
+3. Model Training (train.py)
+Models used:
+
+Random Forest Regressor
+
+XGBoost Regressor
+
+Train-test split: 80/20
+
+Best model selected using RMSE
+
+✅ Final model: XGBoost
+
+4. Model Evaluation (evaluate.py)
+Metric: RMSE (Root Mean Squared Error)
+
+XGBoost achieved better performance compared to Random Forest
+
+5. Inference Pipeline
+Input → Preprocess → Feature Engineering → Prediction
+✅ Same logic reused → ensures consistency
+✅ Prevents data leakage
+
+🚀 Deployment (FastAPI)
+Run API
 uvicorn app.app:app --reload
-Open:
+Endpoint
+POST /predict
+Sample Input
+{
+  "id": 1,
+  "store_nbr": 1,
+  "family": 1,
+  "onpromotion": 0,
+  "day_of_week": 2,
+  "month": 3,
+  "week": 10,
+  "is_weekend": 0,
+  "lag_1": 100,
+  "lag_2": 110,
+  "lag_3": 120,
+  "lag_7": 130,
+  "lag_14": 140,
+  "lag_21": 150,
+  "lag_28": 160,
+  "rolling_mean_7": 125,
+  "rolling_mean_14": 135,
+  "rolling_std_7": 10
+}
+Output
+{
+  "prediction": 132.45
+}
+📊 Dashboard (Streamlit)
+Run
+streamlit run streamlit_app.py
+Features
+Store & product selection
+
+Auto-generated lag features
+
+Demand prediction
+
+Visualization of trends
+
+🐳 Docker
+Build
+docker build -t inventory-app .
+Run
+docker run -p 8000:8000 inventory-app
+Access:
 
 http://localhost:8000/docs
-3. Run Dashboard
-streamlit run streamlit_app.py
-🐳 Docker
-docker build -t inventory-app .
-docker run -p 8000:8000 inventory-app
-📌 Model
-Final model: XGBoost
+🔁 CI/CD (GitHub Actions)
+Pipeline runs on every push
 
-Metric used: RMSE
+Installs dependencies
 
-📝 Notes
-Same preprocessing is used in training and prediction
+Ensures project builds successfully
 
-Model is saved as models/model_v1.pkl
+Deployment is supported via Docker containers.
 
-Logs stored in logs/app.log
+📝 Logging
+Logs stored in:
+
+logs/app.log
+Captures:
+
+Prediction requests
+
+Errors
+
+🧠 Key Highlights
+End-to-end ML pipeline
+
+Strong feature engineering
+
+No data leakage
+
+Model comparison approach
+
+Deployment-ready system
+
+MLOps integration
+
+🔮 Future Improvements
+Add external features (weather, holidays)
+
+Use deep learning models (LSTM, GRU)
+
+Real-time data integration
+
+👥 Team Members
+Priyamvada (Data Engineering)
+
+Vanessa (ML Engineering)
+
+Vaibhav (MLOps)
+
+Aditya (Backend & Deployment)
+
+🎯 Conclusion
+This project demonstrates a scalable, production-ready machine learning system for inventory demand forecasting, combining ML, deployment, and MLOps practices to solve real-world problems.
