@@ -234,6 +234,7 @@ Use deep learning models (LSTM, GRU)
 Real-time data integration
 
 👥 Team Members
+
 Priyamvada (Data Engineering)
 
 Vanessa (ML Engineering)
