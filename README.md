@@ -241,7 +241,7 @@ Vanessa (ML Engineering)
 
 Vaibhav (MLOps)
 
-Aditya (Backend & Deployment)
+Adithya (Backend & Deployment)
 
 🎯 Conclusion
 This project demonstrates a scalable, production-ready machine learning system for inventory demand forecasting, combining ML, deployment, and MLOps practices to solve real-world problems.
